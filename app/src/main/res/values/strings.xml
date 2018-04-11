@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">ActivityArgs</string>
+    <string name="launch">Launch!</string>
+</resources>
