@@ -63,3 +63,15 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
+
+apply plugin: 'maven'
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: MAVEN_URL) {
+            authentication(userName: MAVEN_USER, password: MAVEN_PASSWORD)
+        }
+        pom.groupId = "com.twiceyuan"
+        pom.artifactId = "activityargs"
+        pom.version = "1.0"
+    }
+}
