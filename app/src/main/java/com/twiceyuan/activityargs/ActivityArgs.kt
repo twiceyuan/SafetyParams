@@ -26,7 +26,7 @@ abstract class ActivityArgs {
 
 inline fun <reified T> Class<*>.isSubType() = T::class.java.isAssignableFrom(this)
 
-fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args: Any) {
+fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args: ActivityArgs) {
     val intent = Intent(this, targetClass)
 
     if (this !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -45,11 +45,20 @@ fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args: Any) {
     args::class.java.declaredFields.forEach { field ->
         @Suppress("UNCHECKED_CAST")
         when {
-        // String 类型单独存储，因为可以区分 null
             field.type.isSubType<String>() -> {
                 intent.putExtra(field.name, field.read(args) as String)
+                return@forEach
             }
 
+            field.type.isSubType<CharSequence>() -> {
+                intent.putExtra(field.name, field.read(args) as CharSequence)
+                return@forEach
+            }
+
+            field.type.isSubType<Parcelable>() -> {
+                intent.putExtra(field.name, field.read(args) as Parcelable)
+                return@forEach
+            }
 
         // Array 类
             field.type.isSubType<Array<Boolean>>() -> {
@@ -129,10 +138,11 @@ fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args: Any) {
                 intent.putExtra(field.name, field.read(args) as Serializable)
             }
 
-        // Parcelable 以及嵌套 Parcelable
-            field.type.isSubType<Parcelable>() -> {
-                intent.putExtra(field.name, field.read(args) as Parcelable)
-                return@forEach
+            else -> {
+                throw DataBeanNotLegalException(
+                        "${args.javaClass.canonicalName} 中定义了 Bundle 不支持存储的类型: " +
+                                "成员 ${field.type.canonicalName}[${field.name}]"
+                )
             }
         }
     }
@@ -157,21 +167,25 @@ inline fun <reified Data : ActivityArgs> Activity.parseActivityArgs(): Data {
 
         constructorMap[it] = when (it.type.javaType) {
         // 原始类型
-            is Class<*> -> when (it.type.classifier) {
-                String::class -> {
-                    intent.getStringExtra(it.name)
+            is Class<*> -> {
+                val typeClass = it.type.javaType as Class<*>
+                when {
+                    typeClass.isSubType<String>() -> intent.getStringExtra(it.name)
+                    typeClass.isSubType<Parcelable>() -> intent.getParcelableExtra<Parcelable>(it.name)
+
+                    arrayOf(
+                            typeClass.isSubType<Int>(),
+                            typeClass.isSubType<Boolean>(),
+                            typeClass.isSubType<Double>(),
+                            typeClass.isSubType<Long>(),
+                            typeClass.isSubType<Short>(),
+                            typeClass.isSubType<Float>(),
+                            typeClass.isSubType<Byte>(),
+                            typeClass.isSubType<Serializable>()
+                    ).any() -> intent.getSerializableExtra(it.name)
+
+                    else -> null
                 }
-                Int::class,
-                Boolean::class,
-                Double::class,
-                Long::class,
-                Short::class,
-                Float::class,
-                Byte::class,
-                Serializable::class -> {
-                    intent.getSerializableExtra(it.name)
-                }
-                else -> null
             }
         // 带泛型参数的（ArrayList）
             is ParameterizedType -> {
@@ -189,8 +203,8 @@ inline fun <reified Data : ActivityArgs> Activity.parseActivityArgs(): Data {
                     rawType.isSubType<Array<Int>>() -> intent.getIntArrayExtra(it.name)
                     rawType.isSubType<Array<Long>>() -> intent.getLongArrayExtra(it.name)
                     rawType.isSubType<Array<Short>>() -> intent.getShortArrayExtra(it.name)
-                    rawType.isSubType<Array<CharSequence>>() -> intent.getCharSequenceArrayExtra(it.name)
                     rawType.isSubType<Array<String>>() -> intent.getStringArrayExtra(it.name)
+                    rawType.isSubType<Array<CharSequence>>() -> intent.getCharSequenceArrayExtra(it.name)
                     rawType.isSubType<Array<Parcelable>>() -> intent.getParcelableArrayExtra(it.name)
 
                 // ArrayList 类

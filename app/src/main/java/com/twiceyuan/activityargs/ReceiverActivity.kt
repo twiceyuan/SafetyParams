@@ -31,9 +31,9 @@ class ReceiverActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_receiver)
 
-        val content = JSONObject(Gson().toJson(args)).toString(2)
+        val argJsonPrettify = JSONObject(Gson().toJson(args)).toString(2)
 
-        tv_content.text = content
+        tv_content.text = argJsonPrettify
     }
 }
 

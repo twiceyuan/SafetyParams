@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
                     phone = "123456789",
                     emails = arrayListOf("somemail1@gmail.com, somemail2@gmail.com"),
                     age = 25,
-                    parcelableBean = ParcelableBean("Tony", 100) // TODO: 2018/4/12 ArrayList 嵌套类型存在问题
+                    parcelableBean = ParcelableBean("Tony", 100)
             ).launch(this)
         }
     }
