@@ -1,4 +1,4 @@
-package com.twiceyuan.activityargs
+package com.twiceyuan.activityargs.sample
 
 import android.app.Activity
 import android.content.Context
@@ -16,111 +16,131 @@ import kotlin.reflect.jvm.javaType
  *
  * Pass the args from intent
  */
+
+/**
+ * 定义传递参数数据 Model 所要继承的类。例如：
+ * ```
+ * data class Starter(val name: String) : ActivityArgs {
+ *     override fun targetClass() = SomeActivity::class.java
+ * }
+ * ```
+ */
 abstract class ActivityArgs {
     fun launch(context: Context) {
         context.startActivityWithArgs(targetClass(), this)
     }
 
+    // 使用抽象方法而不是放入构造器或抽象属性的原因是：保持数据类成员属性的纯净性，避免影响 gson 等序列化工具不能直接进行序列化
     abstract fun targetClass(): Class<out Activity>
 }
 
+/**
+ * 判断当前类型是否为 T 的子类型
+ */
 inline fun <reified T> Class<*>.isSubType() = T::class.java.isAssignableFrom(this)
 
-fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args: ActivityArgs) {
+/**
+ * 利用 ActivityArgs 启动一个 Activity
+ */
+private fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args: ActivityArgs) {
     val intent = Intent(this, targetClass)
 
     if (this !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
 
-    fun Field.read(obj: Any): Any? {
+    // 临时读取一个 field
+    @Suppress("UNCHECKED_CAST")
+    fun <T> Field.read(obj: Any): T? {
         return if (isAccessible) {
-            get(obj)
+            get(obj) as T?
         } else {
             isAccessible = true
             val temp = get(obj)
             isAccessible = false
-            temp
+            temp as T?
         }
     }
 
     args::class.java.declaredFields.forEach { field ->
-        @Suppress("UNCHECKED_CAST")
+        /**
+         * 根据 [args] 中定义的成员类型和名称存储到 intent 中
+         */
         when {
             field.type.isSubType<String>() -> {
-                intent.putExtra(field.name, field.read(args) as String)
+                intent.putExtra(field.name, field.read<String>(args))
                 return@forEach
             }
 
             field.type.isSubType<CharSequence>() -> {
-                intent.putExtra(field.name, field.read(args) as CharSequence)
+                intent.putExtra(field.name, field.read<CharSequence>(args))
                 return@forEach
             }
 
             field.type.isSubType<Parcelable>() -> {
-                intent.putExtra(field.name, field.read(args) as Parcelable)
+                intent.putExtra(field.name, field.read<Parcelable>(args))
                 return@forEach
             }
 
         // Array 类
             field.type.isSubType<Array<Boolean>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Boolean>)
+                intent.putExtra(field.name, field.read<Array<Boolean>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<Byte>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Byte>)
+                intent.putExtra(field.name, field.read<Array<Byte>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<Char>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Char>)
+                intent.putExtra(field.name, field.read<Array<Char>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<Double>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Double>)
+                intent.putExtra(field.name, field.read<Array<Double>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<Float>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Float>)
+                intent.putExtra(field.name, field.read<Array<Float>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<Int>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Int>)
+                intent.putExtra(field.name, field.read<Array<Int>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<Long>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Long>)
+                intent.putExtra(field.name, field.read<Array<Long>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<Short>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Short>)
+                intent.putExtra(field.name, field.read<Array<Short>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<CharSequence>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<CharSequence>)
+                intent.putExtra(field.name, field.read<Array<CharSequence>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<String>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<String>)
+                intent.putExtra(field.name, field.read<Array<String>>(args))
                 return@forEach
             }
             field.type.isSubType<Array<Parcelable>>() -> {
-                intent.putExtra(field.name, field.read(args) as Array<Parcelable>)
+                intent.putExtra(field.name, field.read<Array<Parcelable>>(args))
                 return@forEach
             }
 
         // ArrayList 类
             field.type.isSubType<ArrayList<Int>>() -> {
-                intent.putExtra(field.name, field.read(args) as ArrayList<Int>)
+                intent.putExtra(field.name, field.read<ArrayList<Int>>(args))
                 return@forEach
             }
             field.type.isSubType<ArrayList<Parcelable>>() -> {
-                intent.putExtra(field.name, field.read(args) as ArrayList<Parcelable>)
+                intent.putExtra(field.name, field.read<ArrayList<Parcelable>>(args))
                 return@forEach
             }
             field.type.isSubType<ArrayList<String>>() -> {
-                intent.putExtra(field.name, field.read(args) as ArrayList<String>)
+                intent.putExtra(field.name, field.read<ArrayList<String>>(args))
                 return@forEach
             }
             field.type.isSubType<ArrayList<CharSequence>>() -> {
-                intent.putExtra(field.name, field.read(args) as ArrayList<CharSequence>)
+                intent.putExtra(field.name, field.read<ArrayList<CharSequence>>(args))
                 return@forEach
             }
 
@@ -135,7 +155,8 @@ fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args: Activi
                     field.type.isSubType<Byte>(),
                     field.type.isSubType<Serializable>()
             ).any() -> {
-                intent.putExtra(field.name, field.read(args) as Serializable)
+                intent.putExtra(field.name, field.read<Serializable>(args))
+                return@forEach
             }
 
             else -> {
