@@ -59,3 +59,18 @@ class ReceiverActivity : AppCompatActivity() {
 }
 ```
 
+## 引用依赖
+
+因 JitPack 没有生成 Kotlin 的 source 包，暂时使用私有仓库进行引用：
+
+```groovy
+repositories {
+    // 添加仓库地址
+    maven { url "https://v2e.xyz/nexus/repository/twiceyuan/" }
+}
+
+dependencies {
+    // 添加引用
+    implementation 'com.twiceyuan:activityargs:1.0'
+}
+```
