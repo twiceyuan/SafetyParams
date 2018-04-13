@@ -8,7 +8,6 @@ import java.io.Serializable
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KParameter
-import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.javaType
 
 /**
@@ -173,10 +172,14 @@ private fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args
 class DataBeanNotLegalException(msg: String) : RuntimeException(msg)
 
 inline fun <reified Data : ActivityArgs> Activity.parseActivityArgs(): Data {
+    return parseActivityArgs(this, Data::class.java)
+}
+
+fun <Data : ActivityArgs> parseActivityArgs(activity: Activity, dataClass: Class<Data>): Data = with(activity) {
 
     val constructorMap = hashMapOf<KParameter, Any?>()
 
-    val primaryConstructor = Data::class.primaryConstructor ?: throw DataBeanNotLegalException(
+    val primaryConstructor = dataClass.kotlin.constructors.firstOrNull() ?: throw DataBeanNotLegalException(
             "数据类应该有一个主构造器"
     )
 
@@ -186,13 +189,14 @@ inline fun <reified Data : ActivityArgs> Activity.parseActivityArgs(): Data {
 
     primaryConstructor.parameters.forEach {
 
+        val key = it.name
         constructorMap[it] = when (it.type.javaType) {
         // 原始类型
             is Class<*> -> {
                 val typeClass = it.type.javaType as Class<*>
                 when {
-                    typeClass.isSubType<String>() -> intent.getStringExtra(it.name)
-                    typeClass.isSubType<Parcelable>() -> intent.getParcelableExtra<Parcelable>(it.name)
+                    typeClass.isSubType<String>() -> intent.getStringExtra(key)
+                    typeClass.isSubType<Parcelable>() -> intent.getParcelableExtra<Parcelable>(key)
 
                     arrayOf(
                             typeClass.isSubType<Int>(),
@@ -203,7 +207,7 @@ inline fun <reified Data : ActivityArgs> Activity.parseActivityArgs(): Data {
                             typeClass.isSubType<Float>(),
                             typeClass.isSubType<Byte>(),
                             typeClass.isSubType<Serializable>()
-                    ).any() -> intent.getSerializableExtra(it.name)
+                    ).any() -> intent.getSerializableExtra(key)
 
                     else -> null
                 }
@@ -212,27 +216,27 @@ inline fun <reified Data : ActivityArgs> Activity.parseActivityArgs(): Data {
             is ParameterizedType -> {
                 val rawType = (it.type.javaType as ParameterizedType).rawType as Class<*>
                 when {
-                    rawType.isSubType<Serializable>() -> intent.getSerializableExtra(it.name)
-                    rawType.isSubType<Parcelable>() -> intent.getParcelableExtra<Parcelable>(it.name)
+                    rawType.isSubType<Serializable>() -> intent.getSerializableExtra(key)
+                    rawType.isSubType<Parcelable>() -> intent.getParcelableExtra<Parcelable>(key)
 
                 // Array 类
-                    rawType.isSubType<Array<Boolean>>() -> intent.getBooleanArrayExtra(it.name)
-                    rawType.isSubType<Array<Byte>>() -> intent.getByteArrayExtra(it.name)
-                    rawType.isSubType<Array<Char>>() -> intent.getCharArrayExtra(it.name)
-                    rawType.isSubType<Array<Double>>() -> intent.getDoubleArrayExtra(it.name)
-                    rawType.isSubType<Array<Float>>() -> intent.getFloatArrayExtra(it.name)
-                    rawType.isSubType<Array<Int>>() -> intent.getIntArrayExtra(it.name)
-                    rawType.isSubType<Array<Long>>() -> intent.getLongArrayExtra(it.name)
-                    rawType.isSubType<Array<Short>>() -> intent.getShortArrayExtra(it.name)
-                    rawType.isSubType<Array<String>>() -> intent.getStringArrayExtra(it.name)
-                    rawType.isSubType<Array<CharSequence>>() -> intent.getCharSequenceArrayExtra(it.name)
-                    rawType.isSubType<Array<Parcelable>>() -> intent.getParcelableArrayExtra(it.name)
+                    rawType.isSubType<Array<Boolean>>() -> intent.getBooleanArrayExtra(key)
+                    rawType.isSubType<Array<Byte>>() -> intent.getByteArrayExtra(key)
+                    rawType.isSubType<Array<Char>>() -> intent.getCharArrayExtra(key)
+                    rawType.isSubType<Array<Double>>() -> intent.getDoubleArrayExtra(key)
+                    rawType.isSubType<Array<Float>>() -> intent.getFloatArrayExtra(key)
+                    rawType.isSubType<Array<Int>>() -> intent.getIntArrayExtra(key)
+                    rawType.isSubType<Array<Long>>() -> intent.getLongArrayExtra(key)
+                    rawType.isSubType<Array<Short>>() -> intent.getShortArrayExtra(key)
+                    rawType.isSubType<Array<String>>() -> intent.getStringArrayExtra(key)
+                    rawType.isSubType<Array<CharSequence>>() -> intent.getCharSequenceArrayExtra(key)
+                    rawType.isSubType<Array<Parcelable>>() -> intent.getParcelableArrayExtra(key)
 
                 // ArrayList 类
-                    rawType.isSubType<ArrayList<Int>>() -> intent.getIntegerArrayListExtra(it.name)
-                    rawType.isSubType<ArrayList<Parcelable>>() -> intent.getParcelableArrayListExtra<Parcelable>(it.name)
-                    rawType.isSubType<ArrayList<String>>() -> intent.getStringArrayListExtra(it.name)
-                    rawType.isSubType<ArrayList<CharSequence>>() -> intent.getCharSequenceArrayListExtra(it.name)
+                    rawType.isSubType<ArrayList<Int>>() -> intent.getIntegerArrayListExtra(key)
+                    rawType.isSubType<ArrayList<Parcelable>>() -> intent.getParcelableArrayListExtra<Parcelable>(key)
+                    rawType.isSubType<ArrayList<String>>() -> intent.getStringArrayListExtra(key)
+                    rawType.isSubType<ArrayList<CharSequence>>() -> intent.getCharSequenceArrayListExtra(key)
                     else -> null
                 }
             }

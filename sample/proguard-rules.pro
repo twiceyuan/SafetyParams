@@ -19,3 +19,17 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class * extends com.twiceyuan.activityargs.library.ActivityArgs {
+    <init>(...);
+    *;
+}
+
+-keep class * implements android.os.Parcelable { *; }
+-keep class * implements java.io.Serializable { *; }
+
+-dontwarn org.jetbrains.annotations.**
+-dontwarn kotlin.reflect.jvm.internal.**
+
+-keep class kotlin.reflect.jvm.internal.** { *; }
+-keep class kotlin.Metadata { *; }
+-keep public class kotlin.reflect.jvm.internal.impl.builtins.* { public *; }

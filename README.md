@@ -71,6 +71,24 @@ repositories {
 
 dependencies {
     // 添加引用
-    implementation 'com.twiceyuan:activityargs:1.0'
+    implementation 'com.twiceyuan:activityargs:1.2.0'
 }
 ```
+
+## ProGuard
+
+```
+-keep class * implements android.os.Parcelable { *; }
+-keep class * implements java.io.Serializable { *; }
+
+-dontwarn org.jetbrains.annotations.**
+-dontwarn kotlin.reflect.jvm.internal.**
+
+-keep class kotlin.reflect.jvm.internal.** { *; }
+-keep class kotlin.Metadata { *; }
+-keep public class kotlin.reflect.jvm.internal.impl.builtins.* { public *; }
+```
+
+## TODO
+
+Java 下反射会丢失构造器参数的名称，暂时没有找到好的方案来在 Java 下使用这个工具。
