@@ -78,6 +78,11 @@ dependencies {
 ## ProGuard
 
 ```
+-keep class * extends com.twiceyuan.activityargs.library.ActivityArgs {
+    <init>(...);
+    *;
+}
+
 -keep class * implements android.os.Parcelable { *; }
 -keep class * implements java.io.Serializable { *; }
 
