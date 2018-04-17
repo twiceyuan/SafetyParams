@@ -1,5 +1,6 @@
 package com.twiceyuan.activityargs.sample
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.twiceyuan.activityargs.R
@@ -14,15 +15,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btn_launch.setOnClickListener {
-            ReceiverActivity.Starter(
-                    name = "Tony",
-                    phone = "123456789",
-                    emails = arrayListOf("somemail1@gmail.com, somemail2@gmail.com"),
-                    age = 25,
-                    parcelableBean = ParcelableBean("Tony", 100),
-                    nestedBean = Father("Father", 25, Child("child", 1))
-            ).launch(this)
+        val starter = ReceiverActivity.Starter(
+                name = "Tony",
+                phone = "123456789",
+                emails = arrayListOf("somemail1@gmail.com, somemail2@gmail.com"),
+                age = 25,
+                parcelableBean = ParcelableBean("Tony", 100),
+                nestedBean = Father("Father", 25, Child("child", 1))
+        )
+
+        btn_launch_by_starter.setOnClickListener {
+            starter.launch(this)
+        }
+
+        btn_launch_by_fun.setOnClickListener {
+            val intent = Intent(this, ReceiverActivity::class.java)
+            intent.putExtra("name", starter.name)
+            intent.putExtra("phone", starter.phone)
+            intent.putExtra("emails", starter.emails)
+            intent.putExtra("age", starter.age)
+            intent.putExtra("parcelableBean", starter.parcelableBean)
+            intent.putExtra("nestedBean", starter.nestedBean)
+            startActivity(intent)
         }
     }
 }

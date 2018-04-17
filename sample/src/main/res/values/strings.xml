@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ActivityArgs Demo</string>
-    <string name="launch">启动新界面并传值</string>
+    <string name="launch_by_starter">使用 ActivityArgs 传值</string>
+    <string name="launch_by_fun">使用普通方式传值</string>
 </resources>

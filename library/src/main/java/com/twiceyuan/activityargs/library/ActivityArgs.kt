@@ -24,13 +24,10 @@ import kotlin.reflect.jvm.javaType
  * }
  * ```
  */
-abstract class ActivityArgs {
+abstract class ActivityArgs(@Transient private val targetClass: Class<out Activity>) {
     fun launch(context: Context) {
-        context.startActivityWithArgs(targetClass(), this)
+        context.startActivityWithArgs(targetClass, this)
     }
-
-    // 使用抽象方法而不是放入构造器或抽象属性的原因是：保持数据类成员属性的纯净性，避免影响 gson 等序列化工具不能直接进行序列化
-    abstract fun targetClass(): Class<out Activity>
 }
 
 /**

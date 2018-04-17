@@ -14,10 +14,7 @@ data class Starter(
         val parcelableBean: ParcelableBean, // 一个 Parcelable 类
         val nestedBean: Father, // 一个 Serializable 嵌套 Serializable 类
         val age: Int
-) : ActivityArgs() {
-    // 定义要启动的目标 Activity
-    override fun targetClass() = ReceiverActivity::class.java
-}
+) : ActivityArgs(ReceiverActivity::class.java)
 ```
 
 
@@ -71,7 +68,7 @@ repositories {
 
 dependencies {
     // 添加引用
-    implementation 'com.twiceyuan:activityargs:1.2.0'
+    implementation 'com.twiceyuan:activityargs:1.2.1'
 }
 ```
 

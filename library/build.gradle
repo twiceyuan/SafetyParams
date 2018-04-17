@@ -72,6 +72,6 @@ uploadArchives {
         }
         pom.groupId = "com.twiceyuan"
         pom.artifactId = "activityargs"
-        pom.version = "1.2.0"
+        pom.version = "1.2.1"
     }
 }

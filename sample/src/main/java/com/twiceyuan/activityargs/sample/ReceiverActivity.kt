@@ -26,9 +26,7 @@ class ReceiverActivity : AppCompatActivity() {
             val parcelableBean: ParcelableBean,
             val nestedBean: Father,
             val age: Int
-    ) : ActivityArgs() {
-        override fun targetClass() = ReceiverActivity::class.java
-    }
+    ) : ActivityArgs(ReceiverActivity::class.java)
 
     private val args by lazy { parseActivityArgs<Starter>() }
 
