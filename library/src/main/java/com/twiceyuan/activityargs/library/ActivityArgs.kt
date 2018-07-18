@@ -19,9 +19,7 @@ import kotlin.reflect.jvm.javaType
 /**
  * 定义传递参数数据 Model 所要继承的类。例如：
  * ```
- * data class Starter(val name: String) : ActivityArgs {
- *     override fun targetClass() = SomeActivity::class.java
- * }
+ * data class Starter(val name: String) : ActivityArgs(SomeActivity::class.java)
  * ```
  */
 abstract class ActivityArgs(@Transient private val targetClass: Class<out Activity>) {
@@ -176,13 +174,11 @@ fun <Data : ActivityArgs> parseActivityArgs(activity: Activity, dataClass: Class
 
     val constructorMap = hashMapOf<KParameter, Any?>()
 
-    val primaryConstructor = dataClass.kotlin.constructors.firstOrNull() ?: throw DataBeanNotLegalException(
-            "数据类应该有一个主构造器"
-    )
+    val primaryConstructor = dataClass.kotlin.constructors.firstOrNull()
+            ?: throw DataBeanNotLegalException("数据类应该有一个主构造器")
 
-    if (primaryConstructor.parameters.isEmpty()) throw DataBeanNotLegalException(
-            "数据类应该至少有一个构造器参数"
-    )
+    if (primaryConstructor.parameters.isEmpty())
+        throw DataBeanNotLegalException("数据类应该至少有一个构造器参数")
 
     primaryConstructor.parameters.forEach {
 
