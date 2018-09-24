@@ -1,4 +1,4 @@
-package com.twiceyuan.activityargs.sample.bean
+package com.twiceyuan.safetyparams.sample.bean
 
 import java.io.Serializable
 

@@ -28,10 +28,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    testImplementation 'junit:junit:4.12'
-
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 }
 
 repositories {
@@ -63,16 +59,3 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
-
-// maven uploader
-//apply plugin: 'maven'
-//uploadArchives {
-//    repositories.mavenDeployer {
-//        repository(url: MAVEN_URL) {
-//            authentication(userName: MAVEN_USER, password: MAVEN_PASSWORD)
-//        }
-//        pom.groupId = "com.twiceyuan"
-//        pom.artifactId = "activityargs"
-//        pom.version = "1.2.1"
-//    }
-//}

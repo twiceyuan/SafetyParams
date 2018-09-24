@@ -75,7 +75,7 @@ dependencies {
 ## ProGuard
 
 ```
--keep class * extends com.twiceyuan.activityargs.library.ActivityArgs {
+-keep class * extends com.twiceyuan.activityargs.library.SafetyParams {
     <init>(...);
     *;
 }

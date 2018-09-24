@@ -1,13 +1,13 @@
-package com.twiceyuan.activityargs.sample
+package com.twiceyuan.safetyparams.sample
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.google.gson.Gson
-import com.twiceyuan.activityargs.R
-import com.twiceyuan.activityargs.library.ActivityArgs
-import com.twiceyuan.activityargs.library.parseActivityArgs
-import com.twiceyuan.activityargs.sample.bean.Father
-import com.twiceyuan.activityargs.sample.bean.ParcelableBean
+import com.twiceyuan.safetyparams.R
+import com.twiceyuan.safetyparams.library.SafetyParams
+import com.twiceyuan.safetyparams.library.parseParams
+import com.twiceyuan.safetyparams.sample.bean.Father
+import com.twiceyuan.safetyparams.sample.bean.ParcelableBean
 import kotlinx.android.synthetic.main.activity_receiver.*
 import org.json.JSONObject
 
@@ -26,9 +26,9 @@ class ReceiverActivity : AppCompatActivity() {
             val parcelableBean: ParcelableBean,
             val nestedBean: Father,
             val age: Int
-    ) : ActivityArgs(ReceiverActivity::class.java)
+    ) : SafetyParams(ReceiverActivity::class.java)
 
-    private val args by lazy { parseActivityArgs<Starter>() }
+    private val args by lazy { parseParams<Starter>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

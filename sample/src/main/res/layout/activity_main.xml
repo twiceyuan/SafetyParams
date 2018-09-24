@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.twiceyuan.activityargs.sample.MainActivity">
+    tools:context="com.twiceyuan.safetyparams.sample.MainActivity">
 
     <Button
         android:id="@+id/btn_launch_by_starter"
