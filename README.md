@@ -1,59 +1,48 @@
-# ActivityArgs
+# SafetyParams
 
-在 Kotlin 下通过更简单和类型安全的方式进行 Activity 传值。
+在 Kotlin 下通过更简单和类型安全的方式进行 Activity/Fragment 传值。
 
 ## 用法 
 
 定义数据类型，成员可定义成任何 intent 可存储的数据类型（int 等原始类型会被存储为 Serializable 以分辨 null 与 非 null）：
 
 ```kotlin
-data class Starter(
-        val name: String,
-        val phone: String,
-        val emails: ArrayList<String>?,
-        val parcelableBean: ParcelableBean, // 一个 Parcelable 类
-        val nestedBean: Father, // 一个 Serializable 嵌套 Serializable 类
-        val age: Int
-) : ActivityArgs(ReceiverActivity::class.java)
+class ReceiverActivity : AppCompatActivity() {
+    // 定义参数类型
+    data class Params(
+            val name: String,
+            val phone: String,
+            val emails: ArrayList<String>?,
+            val parcelableBean: ParcelableBean,
+            val nestedBean: Father,
+            val age: Int
+    ) : SafetyActivityParams(ReceiverActivity::class.java)
+
+    // 解析
+    private val args by lazy { parseParams<Params>() }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_receiver)
+
+        // 直接取值
+        tv_content.text = args.toJsonTree()
+    }
+}
 ```
 
 
 发送方：
 
 ```kotlin
-override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    // ......
-    ReceiverActivity.Starter(
-            name = "Tony",
-            phone = "123456789",
-            emails = arrayListOf("somemail1@gmail.com, somemail2@gmail.com"),
-            age = 25,
-            parcelableBean = ParcelableBean("Tony", 100),
-            nestedBean = Father("Father", 25, Child("child", 1))
-    ).launch(this)
-}
-```
-
-
-接收方：
-
-```kotlin
-class ReceiverActivity : AppCompatActivity() {
-
-    // 解析传进来的值
-    private val args by lazy { parseActivityArgs<Starter>() }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_receiver)
-
-        // 直接进行取值
-        xxx = args.name // "Tony"
-        xxx = args.nestedBean.child.name // "child"
-        // ...
-    }
-}
+ReceiverActivity.Params(
+    age = 25,
+    name = "Tony",
+    phone = "123456789",
+    parcelableBean = ParcelableBean("Tony", 100),
+    emails = arrayListOf("somemail1@gmail.com, somemail2@gmail.com"),
+    nestedBean = Father("Father", 25, Child("child", 1))
+).launch(this)
 ```
 
 ## 引用依赖
@@ -63,12 +52,12 @@ class ReceiverActivity : AppCompatActivity() {
 ```groovy
 repositories {
     // 添加仓库地址
-    maven { url "https://v2e.xyz/nexus/repository/twiceyuan/" }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
     // 添加引用
-    implementation 'com.twiceyuan:activityargs:1.2.1'
+    implementation "com.github.twiceyuan:SafetyParams:$latest_version"
 }
 ```
 
