@@ -18,7 +18,7 @@ import kotlin.reflect.jvm.javaType
  * Pass the args from intent
  */
 
-interface SafetyParams
+sealed class SafetyParams
 
 /**
  * 定义传递参数数据 Model 所要继承的类。例如：
@@ -26,7 +26,10 @@ interface SafetyParams
  * data class Starter(val name: String) : SafetyParams(SomeActivity::class.java)
  * ```
  */
-abstract class SafetyActivityParams(@Transient private val targetClass: Class<out Activity>): SafetyParams {
+abstract class SafetyActivityParams(
+        @Transient private val targetClass: Class<out Activity>
+) : SafetyParams() {
+
     fun launch(context: Context) {
         context.startActivityWithArgs(targetClass, this)
     }
@@ -36,14 +39,18 @@ abstract class SafetyActivityParams(@Transient private val targetClass: Class<ou
     }
 }
 
-abstract class SafetySupportFragmentParams(@Transient private val targetClass: Class<out Fragment>) : SafetyParams {
-    fun newInstance() = targetClass.newInstance().apply {
+abstract class SafetySupportFragmentParams<fragment : Fragment>(
+        @Transient private val targetClass: Class<fragment>
+) : SafetyParams() {
+    fun newInstance(): fragment = targetClass.newInstance().apply {
         arguments = this@SafetySupportFragmentParams.toBundle()
     }
 }
 
-abstract class SafetyFragmentParams(@Transient private val targetClass: Class<out android.app.Fragment>) : SafetyParams {
-    fun newInstance() = targetClass.newInstance().apply {
+abstract class SafetyFragmentParams<fragment : android.app.Fragment>(
+        @Transient private val targetClass: Class<fragment>
+) : SafetyParams() {
+    fun newInstance(): fragment = targetClass.newInstance().apply {
         arguments = this@SafetyFragmentParams.toBundle()
     }
 }

@@ -15,28 +15,41 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val starter = ReceiverActivity.Starter(
-                name = "Tony",
-                phone = "123456789",
-                emails = arrayListOf("somemail1@gmail.com, somemail2@gmail.com"),
-                age = 25,
-                parcelableBean = ParcelableBean("Tony", 100),
-                nestedBean = Father("Father", 25, Child("child", 1))
-        )
-
-        btn_launch_by_starter.setOnClickListener {
-            starter.launch(this)
-        }
-
+        // 普通传值给 Activity
         btn_launch_by_fun.setOnClickListener {
             val intent = Intent(this, ReceiverActivity::class.java)
-            intent.putExtra("name", starter.name)
-            intent.putExtra("phone", starter.phone)
-            intent.putExtra("emails", starter.emails)
-            intent.putExtra("age", starter.age)
-            intent.putExtra("parcelableBean", starter.parcelableBean)
-            intent.putExtra("nestedBean", starter.nestedBean)
+            intent.putExtra("name", "twiceYuan")
+            intent.putExtra("phone", "000000000")
+            intent.putExtra("emails", arrayListOf("somemail1@gmail.com, somemail2@gmail.com"))
+            intent.putExtra("age", 0)
+            intent.putExtra("parcelableBean", ParcelableBean("twiceYuan", 100))
+            intent.putExtra("nestedBean", Father("Father", 25, Child("child", 1)))
             startActivity(intent)
+        }
+
+        // 使用 SafetyParams 传值给 Activity
+        btn_launch_by_starter.setOnClickListener {
+            ReceiverActivity.Params(
+                    age = 25,
+                    name = "Tony",
+                    phone = "123456789",
+                    parcelableBean = ParcelableBean("Tony", 100),
+                    emails = arrayListOf("somemail1@gmail.com, somemail2@gmail.com"),
+                    nestedBean = Father("Father", 25, Child("child", 1))
+            ).launch(this)
+        }
+
+        // 使用 SafetyParams 传值给 Fragment
+        btn_launch_fragment.setOnClickListener {
+            val dialog = ReceiverFragment.Params(
+                    age = 25,
+                    name = "Tony",
+                    phone = "123456789",
+                    parcelableBean = ParcelableBean("Tony", 100),
+                    emails = arrayListOf("somemail1@gmail.com, somemail2@gmail.com"),
+                    nestedBean = Father("Father", 25, Child("child", 1))
+            ).newInstance()
+            dialog.show(supportFragmentManager, null)
         }
     }
 }
