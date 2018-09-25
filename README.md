@@ -1,5 +1,7 @@
 # SafetyParams
 
+[![](https://jitpack.io/v/twiceyuan/SafetyParms.svg)](https://jitpack.io/#twiceyuan/SafetyParms)
+
 在 Kotlin 下通过更简单和类型安全的方式进行 Activity/Fragment 传值。
 
 ## 用法 
@@ -60,6 +62,9 @@ dependencies {
     implementation "com.github.twiceyuan:SafetyParams:$latest_version"
 }
 ```
+
+### __ext.latest_version=__  [![](https://jitpack.io/v/twiceyuan/SafetyParms.svg)](https://jitpack.io/#twiceyuan/SafetyParms)
+
 
 ## ProGuard
 
