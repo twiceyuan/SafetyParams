@@ -15,10 +15,17 @@ import kotlin.reflect.jvm.javaType
 /**
  * Created by twiceYuan on 2018/3/26.
  *
- * Pass the args from intent
+ * 在 Activity、Fragment 之间类型安全地传递参数
  */
 
 sealed class SafetyParams
+
+private fun <TargetClass : Class<*>> SafetyParams.genericTypeParam(): TargetClass {
+    @Suppress("UNCHECKED_CAST")
+    return (this::class.java.genericSuperclass as ParameterizedType)
+            .actualTypeArguments[0]
+            as TargetClass
+}
 
 /**
  * 定义传递参数数据 Model 所要继承的类。例如：
@@ -26,9 +33,9 @@ sealed class SafetyParams
  * data class Starter(val name: String) : SafetyParams(SomeActivity::class.java)
  * ```
  */
-abstract class SafetyActivityParams(
-        @Transient private val targetClass: Class<out Activity>
-) : SafetyParams() {
+abstract class ActivityParams<ActivityType : Activity> : SafetyParams() {
+
+    private val targetClass: Class<ActivityType> by lazy { genericTypeParam() }
 
     fun launch(context: Context) {
         context.startActivityWithArgs(targetClass, this)
@@ -36,15 +43,19 @@ abstract class SafetyActivityParams(
 
     @Suppress("unused")
     fun intent(context: Context) = Intent(context, targetClass).apply {
-        putExtras(this@SafetyActivityParams.toBundle())
+        putExtras(this@ActivityParams.toBundle())
     }
 }
 
-abstract class SafetyFragmentParams<fragment : Fragment>(
-        @Transient private val targetClass: Class<fragment>
-) : SafetyParams() {
-    fun newInstance(): fragment = targetClass.newInstance().apply {
-        arguments = this@SafetyFragmentParams.toBundle()
+abstract class FragmentParams<FragmentType : Fragment> : SafetyParams() {
+
+    private val targetClass: Class<FragmentType> by lazy { genericTypeParam() }
+
+    @Suppress("UNCHECKED_CAST")
+    fun newInstance(): FragmentType {
+        return targetClass.newInstance().apply {
+            arguments = this@FragmentParams.toBundle()
+        }
     }
 }
 
@@ -68,6 +79,7 @@ private fun Context.startActivityWithArgs(targetClass: Class<out Activity>, args
 private fun SafetyParams.toBundle(): Bundle {
 
     val bundle = Bundle()
+
     // 临时读取一个 field
     @Suppress("UNCHECKED_CAST")
     fun <T> Field.read(obj: Any): T? {
@@ -193,12 +205,16 @@ private fun SafetyParams.toBundle(): Bundle {
 
 class DataBeanNotLegalException(msg: String) : RuntimeException(msg)
 
-inline fun <reified Data : SafetyParams> Activity.parseParams(): Data {
-    return intent?.extras?.toArgs() ?: throw java.lang.RuntimeException("No arguments passed.")
+inline fun <reified Data : SafetyParams> Activity.parseParams(): Lazy<Data> {
+    return lazy {
+        intent?.extras?.toArgs() ?: throw java.lang.RuntimeException("No arguments passed.")
+    }
 }
 
-inline fun <reified Data : SafetyParams> Fragment.parseParams(): Data {
-    return arguments?.toArgs() ?: throw java.lang.RuntimeException("No arguments passed.")
+inline fun <reified Data : SafetyParams> Fragment.parseParams(): Lazy<Data> {
+    return lazy {
+        arguments?.toArgs() ?: throw java.lang.RuntimeException("No arguments passed.")
+    }
 }
 
 inline fun <reified Data : SafetyParams> Bundle.toArgs(): Data {

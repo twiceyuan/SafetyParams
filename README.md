@@ -10,7 +10,8 @@
 
 ```kotlin
 class ReceiverActivity : AppCompatActivity() {
-    // 定义参数类型
+
+    // 定义一个 data bean
     data class Params(
             val name: String,
             val phone: String,
@@ -18,17 +19,17 @@ class ReceiverActivity : AppCompatActivity() {
             val parcelableBean: ParcelableBean,
             val nestedBean: Father,
             val age: Int
-    ) : SafetyActivityParams(ReceiverActivity::class.java)
+    ) : ActivityParams<ReceiverActivity>() // 通过泛型和 host 类绑定
 
-    // 解析
-    private val args by lazy { parseParams<Params>() }
+    // 解析接收到的类型
+    private val args by parseParams<Params>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_receiver)
+        val binding = ActivityReceiverBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // 直接取值
-        tv_content.text = args.toJsonTree()
+        binding.tvContent.text = args.toJsonTree() // 直接取值进行使用
     }
 }
 ```
@@ -85,6 +86,6 @@ dependencies {
 -keep public class kotlin.reflect.jvm.internal.impl.builtins.* { public *; }
 ```
 
-## TODO
+## Java 兼容性
 
-Java 下反射会丢失构造器参数的名称，暂时没有找到好的方案来在 Java 下使用这个工具。
+Java 下反射会丢失构造器参数的名称，暂无兼容 Java 计划。
