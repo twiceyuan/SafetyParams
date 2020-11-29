@@ -1,16 +1,16 @@
 package com.twiceyuan.safetyparams.sample
 
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
 import com.twiceyuan.safetyparams.R
-import com.twiceyuan.safetyparams.library.SafetySupportFragmentParams
+import com.twiceyuan.safetyparams.databinding.ActivityReceiverBinding
+import com.twiceyuan.safetyparams.library.SafetyFragmentParams
 import com.twiceyuan.safetyparams.library.parseParams
 import com.twiceyuan.safetyparams.sample.bean.Father
 import com.twiceyuan.safetyparams.sample.bean.ParcelableBean
-import kotlinx.android.synthetic.main.activity_receiver.*
 
 class ReceiverFragment : DialogFragment() {
 
@@ -21,7 +21,7 @@ class ReceiverFragment : DialogFragment() {
             val nestedBean: Father,
             val emails: ArrayList<String>?,
             val parcelableBean: ParcelableBean
-    ) : SafetySupportFragmentParams<ReceiverFragment>(ReceiverFragment::class.java)
+    ) : SafetyFragmentParams<ReceiverFragment>(ReceiverFragment::class.java)
 
     private val params by lazy { parseParams<Params>() }
 
@@ -31,6 +31,7 @@ class ReceiverFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tv_content.text = params.toJsonTree()
+        val binding = ActivityReceiverBinding.bind(view)
+        binding.tvContent.text = params.toJsonTree()
     }
 }
