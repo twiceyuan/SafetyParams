@@ -1,14 +1,13 @@
 package com.twiceyuan.safetyparams.sample
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.twiceyuan.safetyparams.R
+import com.twiceyuan.safetyparams.databinding.ActivityReceiverBinding
 import com.twiceyuan.safetyparams.library.SafetyActivityParams
 import com.twiceyuan.safetyparams.library.parseParams
 import com.twiceyuan.safetyparams.sample.bean.Father
 import com.twiceyuan.safetyparams.sample.bean.ParcelableBean
-import kotlinx.android.synthetic.main.activity_receiver.*
-
 
 /**
  * Created by twiceYuan on 2018/3/27.
@@ -30,9 +29,10 @@ class ReceiverActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_receiver)
+        val binding = ActivityReceiverBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        tv_content.text = args.toJsonTree()
+        binding.tvContent.text = args.toJsonTree()
     }
 }
 

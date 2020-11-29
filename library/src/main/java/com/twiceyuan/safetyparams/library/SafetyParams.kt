@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
@@ -34,20 +34,13 @@ abstract class SafetyActivityParams(
         context.startActivityWithArgs(targetClass, this)
     }
 
+    @Suppress("unused")
     fun intent(context: Context) = Intent(context, targetClass).apply {
         putExtras(this@SafetyActivityParams.toBundle())
     }
 }
 
-abstract class SafetySupportFragmentParams<fragment : Fragment>(
-        @Transient private val targetClass: Class<fragment>
-) : SafetyParams() {
-    fun newInstance(): fragment = targetClass.newInstance().apply {
-        arguments = this@SafetySupportFragmentParams.toBundle()
-    }
-}
-
-abstract class SafetyFragmentParams<fragment : android.app.Fragment>(
+abstract class SafetyFragmentParams<fragment : Fragment>(
         @Transient private val targetClass: Class<fragment>
 ) : SafetyParams() {
     fun newInstance(): fragment = targetClass.newInstance().apply {
@@ -202,10 +195,6 @@ class DataBeanNotLegalException(msg: String) : RuntimeException(msg)
 
 inline fun <reified Data : SafetyParams> Activity.parseParams(): Data {
     return intent?.extras?.toArgs() ?: throw java.lang.RuntimeException("No arguments passed.")
-}
-
-inline fun <reified Data : SafetyParams> android.app.Fragment.parseParams(): Data {
-    return arguments?.toArgs() ?: throw java.lang.RuntimeException("No arguments passed.")
 }
 
 inline fun <reified Data : SafetyParams> Fragment.parseParams(): Data {

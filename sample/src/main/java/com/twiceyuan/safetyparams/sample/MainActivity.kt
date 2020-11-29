@@ -2,21 +2,22 @@ package com.twiceyuan.safetyparams.sample
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import com.twiceyuan.safetyparams.R
+import androidx.appcompat.app.AppCompatActivity
+import com.twiceyuan.safetyparams.databinding.ActivityMainBinding
 import com.twiceyuan.safetyparams.sample.bean.Child
 import com.twiceyuan.safetyparams.sample.bean.Father
 import com.twiceyuan.safetyparams.sample.bean.ParcelableBean
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
 
         // 普通传值给 Activity
-        btn_launch_by_fun.setOnClickListener {
+        binding.btnLaunchByFun.setOnClickListener {
             val intent = Intent(this, ReceiverActivity::class.java)
             intent.putExtra("name", "twiceYuan")
             intent.putExtra("phone", "000000000")
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 使用 SafetyParams 传值给 Activity
-        btn_launch_by_starter.setOnClickListener {
+        binding.btnLaunchByStarter.setOnClickListener {
             ReceiverActivity.Params(
                     age = 25,
                     name = "Tony",
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 使用 SafetyParams 传值给 Fragment
-        btn_launch_fragment.setOnClickListener {
+        binding.btnLaunchFragment.setOnClickListener {
             val dialog = ReceiverFragment.Params(
                     age = 25,
                     name = "Tony",
