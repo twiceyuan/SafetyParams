@@ -19,17 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class * extends com.twiceyuan.activityargs.library.SafetyParams {
-    <init>(...);
-    *;
-}
 
--keep class * implements android.os.Parcelable { *; }
--keep class * implements java.io.Serializable { *; }
+# Fragment 的内部类不被 consumer-rules 里的规则影响，仍然会被混淆，找到好的解决方法之前先 keep fragment 的子类
+-keep class * extends androidx.fragment.app.Fragment { *; }
 
--dontwarn org.jetbrains.annotations.**
--dontwarn kotlin.reflect.jvm.internal.**
-
--keep class kotlin.reflect.jvm.internal.** { *; }
--keep class kotlin.Metadata { *; }
--keep public class kotlin.reflect.jvm.internal.impl.builtins.* { public *; }
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable

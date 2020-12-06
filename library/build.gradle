@@ -10,13 +10,12 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        consumerProguardFiles 'consumer-rules.pro'
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -41,7 +40,7 @@ tasks.withType(JavaCompile) {
 }
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    archiveClassifier.set('sources')
 }
 task javadoc(type: Javadoc) {
     failOnError  false
@@ -51,8 +50,7 @@ task javadoc(type: Javadoc) {
 }
 // build a jar with javadoc
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    //noinspection GroovyAccessibility
+    archiveClassifier.set('javadoc')
     from javadoc.destinationDir
 }
 artifacts {

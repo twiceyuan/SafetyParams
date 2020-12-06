@@ -9,8 +9,12 @@ import androidx.fragment.app.Fragment
 import java.io.Serializable
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.reflect.KParameter
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.javaType
+import kotlin.reflect.jvm.jvmName
 
 /**
  * Created by twiceYuan on 2018/3/26.
@@ -35,7 +39,8 @@ private fun <TargetClass : Class<*>> SafetyParams.genericTypeParam(): TargetClas
  */
 abstract class ActivityParams<ActivityType : Activity> : SafetyParams() {
 
-    private val targetClass: Class<ActivityType> by lazy { genericTypeParam() }
+    private val targetClass: Class<ActivityType>
+        get() = genericTypeParam()
 
     fun launch(context: Context) {
         context.startActivityWithArgs(targetClass, this)
@@ -49,12 +54,13 @@ abstract class ActivityParams<ActivityType : Activity> : SafetyParams() {
 
 abstract class FragmentParams<FragmentType : Fragment> : SafetyParams() {
 
-    private val targetClass: Class<FragmentType> by lazy { genericTypeParam() }
+    private val targetClass: Class<FragmentType>
+        get() = genericTypeParam()
 
-    @Suppress("UNCHECKED_CAST")
     fun newInstance(): FragmentType {
+        val bundle = toBundle()
         return targetClass.newInstance().apply {
-            arguments = this@FragmentParams.toBundle()
+            arguments = bundle
         }
     }
 }
@@ -219,15 +225,12 @@ inline fun <reified Data : SafetyParams> Fragment.parseParams(): Lazy<Data> {
 
 inline fun <reified Data : SafetyParams> Bundle.toArgs(): Data {
 
-    val dataClass = Data::class.java
+    val dataClass = Data::class
 
-    val constructorMap = hashMapOf<KParameter, Any?>()
+    val constructorMap = mutableMapOf<KParameter, Any?>()
 
-    val primaryConstructor = dataClass.kotlin.constructors.firstOrNull()
-            ?: throw DataBeanNotLegalException("数据类应该有一个主构造器")
-
-    if (primaryConstructor.parameters.isEmpty())
-        throw DataBeanNotLegalException("数据类应该至少有一个构造器参数")
+    val primaryConstructor = dataClass.primaryConstructor
+            ?: throw DataBeanNotLegalException("${dataClass.jvmName} 数据类应该有一个主构造器")
 
     primaryConstructor.parameters.forEach {
 

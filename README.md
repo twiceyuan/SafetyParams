@@ -69,22 +69,18 @@ dependencies {
 
 ## ProGuard
 
+已经包含在 consumer-rules 文件中，不必单独手动添加。文件内容为：
 ```
--keep class * extends com.twiceyuan.safetyparams.library.SafetyParams {
-    <init>(...);
-    *;
-}
-
--keep class * implements android.os.Parcelable { *; }
--keep class * implements java.io.Serializable { *; }
-
--dontwarn org.jetbrains.annotations.**
--dontwarn kotlin.reflect.jvm.internal.**
-
--keep class kotlin.reflect.jvm.internal.** { *; }
--keep class kotlin.Metadata { *; }
--keep public class kotlin.reflect.jvm.internal.impl.builtins.* { public *; }
+-keep class * extends com.twiceyuan.safetyparams.library.SafetyParams { *; }
+-keep class * extends android.os.Parcelable { *; }
+-keep class * extends java.io.Serializable { *; }
 ```
+
+需要注意的是，如果 SafetyParams 的子类定义为 Fragment 的内部类，并且没有定义 keep Fragment 成员配置的话，该子类仍然会被混淆，原因暂不清楚（尝试把该内部类定义在其他 Class 下均未发现该现象）。
+
+如果需要混淆避免该情况，有两种建议的做法：
+1. 把 SafetyParams 定义在外部，例如和 Fragment 平级的 class
+2. 添加 keep Fragment 的配置：`-keep class * extends androidx.fragment.app.Fragment { *; }`
 
 ## Java 兼容性
 

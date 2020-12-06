@@ -15,14 +15,13 @@ import com.twiceyuan.safetyparams.sample.bean.ParcelableBean
 class ReceiverFragment : DialogFragment() {
 
     data class Params(
-            val age: Int,
             val name: String,
             val phone: String,
-            val nestedBean: Father,
             val emails: ArrayList<String>?,
-            val parcelableBean: ParcelableBean
+            val parcelableBean: ParcelableBean,
+            val nestedBean: Father,
+            val age: Int
     ) : FragmentParams<ReceiverFragment>()
-
     private val params by parseParams<Params>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
