@@ -1,1 +1,14 @@
 include ':sample', ':library'
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        classpath 'io.github.twiceyuan:remote-version-catalog:1.1'
+    }
+}
+
+apply plugin: 'remote-version-catalog'

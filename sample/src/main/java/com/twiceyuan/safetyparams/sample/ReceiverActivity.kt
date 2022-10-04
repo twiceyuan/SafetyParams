@@ -16,12 +16,12 @@ import com.twiceyuan.safetyparams.sample.bean.ParcelableBean
 class ReceiverActivity : AppCompatActivity() {
 
     data class Params(
-            val name: String,
-            val phone: String,
-            val emails: ArrayList<String>?,
-            val parcelableBean: ParcelableBean,
-            val nestedBean: Father,
-            val age: Int
+        val name: String,
+        val phone: String,
+        val emails: ArrayList<String>?,
+        val parcelableBean: ParcelableBean,
+        val nestedBean: Father,
+        val age: Int,
     ) : ActivityParams<ReceiverActivity>()
 
     private val args by parseParams<Params>()
@@ -30,8 +30,6 @@ class ReceiverActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding = ActivityReceiverBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         binding.tvContent.text = args.toJsonTree()
     }
 }
-
